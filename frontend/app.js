@@ -3,8 +3,10 @@
  * Connects to backend API and manages UI interactions
  */
 
-// Configuration
-const API_URL = 'http://localhost:5000/api';
+// Configuration - Works with both localhost and Codespaces
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'
+  : `https://${window.location.hostname.replace('3000', '5000')}/api`;
 
 // DOM Elements
 const transactionForm = document.getElementById('transactionForm');
@@ -26,6 +28,7 @@ const suggestionsContainer = document.getElementById('suggestionsContainer');
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Budget Tracker Loaded');
+    console.log('📍 API URL:', API_URL);
     
     // Set today's date as default
     const today = new Date().toISOString().split('T')[0];
@@ -65,7 +68,7 @@ async function loadSummary() {
         }
     } catch (error) {
         console.error('❌ Error loading summary:', error);
-        showError('Failed to load summary');
+        showError('Failed to load summary. Backend running?');
     }
 }
 
@@ -90,7 +93,6 @@ async function loadTransactions() {
         }
     } catch (error) {
         console.error('❌ Error loading transactions:', error);
-        showError('Failed to load transactions');
     }
 }
 
@@ -104,7 +106,6 @@ function createTransactionElement(transaction) {
     
     const isIncome = transaction.type === 'income';
     const amountPrefix = isIncome ? '+' : '-';
-    const amountColor = isIncome ? 'green' : 'red';
     
     div.innerHTML = `
         <div class="transaction-info">
@@ -255,6 +256,6 @@ window.addEventListener('load', async () => {
         const response = await fetch(API_URL.replace('/api', ''));
         console.log('✅ Backend connected');
     } catch (error) {
-        console.warn('⚠️ Backend not running. Make sure to run: python backend/app.py');
+        console.warn('⚠️ Backend not running yet. Wait for terminal to show server ready.');
     }
 });
